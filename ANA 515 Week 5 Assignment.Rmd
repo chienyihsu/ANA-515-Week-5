@@ -1,0 +1,47 @@
+---
+title: "ANA 515 Week 5 Assignment"
+author: "Cindy Hsu"
+date: '2024'
+output: word_document
+---
+
+
+```{r, include = FALSE}
+library("tidyverse")
+library("knitr")
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(maps)
+```
+
+```{r, echo = TRUE}
+drinks <- read.csv("C:\\Users\\Cindy Hsu\\Downloads\\drinks.csv")
+#We use read.csv function to read the data and assign it to an object.
+```
+
+This heatmap gives us a better idea on the consumption of alcohol in liters globally
+
+```{r, echo = TRUE}
+drinks$country[drinks$country == "United States"] <- "USA"
+
+world_map <- map_data("world")
+world_map <- subset(world_map, region != "Antarctica")
+
+ggplot(drinks) +
+  geom_map(
+    dat = world_map, map = world_map, aes(map_id = region),
+    fill = "white", color = "#7f7f7f", size = 0.25
+  ) +
+  geom_map(map = world_map, aes(map_id = country, fill = total_litres_of_pure_alcohol), size = 0.25) +
+  scale_fill_gradient(low = "#fff7bc", high = "#cc4c02", name = "Total Liters Consumed") +
+  expand_limits(x = world_map$long, y = world_map$lat)
+```
+
+This bar chart shows the top 10 countries that consume the most alcohol in liters
+
+```{r, echo = TRUE} 
+drinks %>%
+  top_n(10, total_litres_of_pure_alcohol) %>%
+  ggplot()+geom_bar(mapping=aes(x=country,y=total_litres_of_pure_alcohol),stat = "identity")
+```
